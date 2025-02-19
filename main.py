@@ -43,6 +43,10 @@ class CondaEnvironmentManager:
                               command=self.delete_environment)
         delete_btn.grid(row=2, column=1, pady=10, padx=5)
 
+        clean_btn = ttk.Button(self.main_frame, text="Clean Conda", 
+                             command=self.clean_conda)
+        clean_btn.grid(row=3, column=0, columnspan=2, pady=10)
+
     def get_conda_environments(self):
         try:
             result = subprocess.run(['conda', 'env', 'list', '--json'], 
@@ -88,6 +92,15 @@ class CondaEnvironmentManager:
             thread.start()
             # Immediately refresh to show operation is in progress
             self.refresh_environments()
+
+    def clean_conda(self):
+        try:
+            result = subprocess.run(['conda', 'clean', '-a', '-y'], 
+                                 capture_output=True, text=True, check=True)
+            print(result.stdout)
+            messagebox.showinfo("Success", "Conda cleaned successfully")
+        except subprocess.CalledProcessError as e:
+            messagebox.showerror("Error", f"Failed to clean conda: {e.stderr}")
 
 def main():
     root = tk.Tk()
